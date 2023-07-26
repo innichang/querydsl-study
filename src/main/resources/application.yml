@@ -1,0 +1,27 @@
+spring:
+  profiles:
+    active: local
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/querydsl
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  security:
+    user:
+      password: e763cf5b-38b2-485a-8155-1f80ec0bba67
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+#        show_sql: true
+        format_sql: true
+        use_sql_comments: true   #JPQL출력이 궁금할때
+
+logging.level:
+  org.hibernate.SQL: debug
+  org.hibernate.type: trace
+
