@@ -3,24 +3,16 @@ package study.querydsl.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-import study.querydsl.dto.MemberSearchCondition;
-import study.querydsl.dto.MemberTeamDto;
+import study.querydsl.dto.AggregationDto;
 import study.querydsl.entity.Member;
-import study.querydsl.entity.QMember;
-import study.querydsl.entity.Team;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static study.querydsl.entity.QMember.*;
 import static study.querydsl.entity.QMember.member;
 import static study.querydsl.entity.QTeam.team;
 
@@ -30,14 +22,32 @@ class MemberRepositoryTest {
 
     @Autowired
     EntityManagerFactory emf;
+
     @Autowired
     EntityManager em;
+
     JPAQueryFactory queryFactory;
+
     @Autowired
     MemberRepository memberRepository;
 
     @Test
-    public void join() {     //N+1 조금 더 정확히 알아보기
+    public void join_and_test() {
+        List<Member> findMembers = memberRepository.queryWithAnd();
+
+        assertThat(findMembers).hasSize(6);
+    }
+
+    @Test
+    public void aggregation_test() {
+        AggregationDto result = memberRepository.aggregationList();
+
+        assertThat(result.getAvg()).isEqualTo(49.5);
+        assertThat(result.getSum()).isEqualTo(4950);
+    }
+
+    @Test   //Test XXXXXX
+    public void join() {     //N+1 조금 더 정확히 알아보는 용도
         queryFactory = new JPAQueryFactory(em);
         Member findMember = queryFactory
                 .selectFrom(member)

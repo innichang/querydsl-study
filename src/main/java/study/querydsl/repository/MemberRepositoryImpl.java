@@ -16,7 +16,6 @@ import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
