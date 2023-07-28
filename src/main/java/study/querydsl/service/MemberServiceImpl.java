@@ -6,13 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import study.querydsl.dto.MemberDto;
-import study.querydsl.dto.MemberSearchCondition;
-import study.querydsl.dto.MemberTeamDto;
+import study.querydsl.dto.*;
 import study.querydsl.entity.Member;
 import study.querydsl.repository.MemberRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -44,7 +41,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Tuple aggregationList() {
+    public AggregationDto aggregationList() {
         return memberRepository.aggregationList();
     }
 
@@ -82,7 +79,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<Tuple> selectSubQuery() {
+    public List<MemberAvgDto> selectSubQuery() {
         return memberRepository.selectSubQuery();
     }
 

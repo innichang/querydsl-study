@@ -10,7 +10,6 @@ import study.querydsl.entity.Member;
 public class MemberDto {
     private String username;
     private Integer age;
-    private String ageRange;
 
     @QueryProjection
     public MemberDto(Member member) {
@@ -18,9 +17,8 @@ public class MemberDto {
         this.age = member.getAge() != null ? member.getAge() : null;
     }
 
-    public MemberDto(String username, Integer age, String ageRange){
+    public MemberDto(String username, Integer age, String ageRange) {
         this.username = username;
         this.age = age;
-        this.ageRange = ageRange;
     }
 }

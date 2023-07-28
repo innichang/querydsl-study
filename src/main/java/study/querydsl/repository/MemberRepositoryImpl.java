@@ -11,14 +11,12 @@ import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import study.querydsl.dto.MemberDto;
-import study.querydsl.dto.MemberSearchCondition;
-import study.querydsl.dto.MemberTeamDto;
-import study.querydsl.dto.QMemberTeamDto;
+import study.querydsl.dto.*;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,17 +75,20 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public Tuple aggregationList() {
+    public AggregationDto aggregationList() {
         return queryFactory
-                .select(
+                .select(new QAggregationDto(
                         member.count(),
                         member.age.sum(),
                         member.age.avg(),
                         member.age.max(),
                         member.age.min()
+                        )
+
                 )
                 .from(member)
                 .fetchOne();
+
     }
 
     @Override
@@ -185,13 +186,15 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public List<Tuple> selectSubQuery() {
+    public List<MemberAvgDto> selectSubQuery() {
         QMember memberSub = new QMember("memberSub");
 
         return queryFactory
-                .select(member.username,
+                .select(Projections.constructor(MemberAvgDto.class,
+                                member.username,
                         select(memberSub.age.avg())
-                                .from(memberSub))
+                                .from(memberSub)
+                ))
                 .from(member)
                 .fetch();
     }
@@ -227,7 +230,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
     @Override
     public List<MemberTeamDto> queryProjections() {
-        List<MemberTeamDto> results = queryFactory
+        return queryFactory
                 .select(new QMemberTeamDto(
                         member.id,
                         member.username,
@@ -240,11 +243,6 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .where(member.team.name.eq("teamB"))
                 .fetch();
 
-        for (MemberTeamDto result : results) {
-            System.out.println("member = " + result);
-        }
-
-        return results;
     }
 
     @Override

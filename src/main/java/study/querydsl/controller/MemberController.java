@@ -1,18 +1,12 @@
 package study.querydsl.controller;
 
 import com.querydsl.core.Tuple;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import study.querydsl.dto.MemberDto;
-import study.querydsl.dto.MemberSearchCondition;
-import study.querydsl.dto.MemberTeamDto;
-import study.querydsl.entity.Member;
-import study.querydsl.repository.MemberRepository;
+import study.querydsl.dto.*;
 import study.querydsl.service.MemberService;
 
 import java.util.List;
@@ -39,7 +33,7 @@ public class MemberController {
     }
 
     @GetMapping("/members/aggregate")
-    public Tuple aggregationList() {
+    public AggregationDto aggregationList() {
         return memberService.aggregationList();
     }
 
@@ -69,7 +63,7 @@ public class MemberController {
     }
 
     @GetMapping("/members/selectSubQuery")
-    List<Tuple> selectSubQuery() {
+    List<MemberAvgDto> selectSubQuery() {
         return memberService.selectSubQuery();
     }
 
@@ -89,7 +83,7 @@ public class MemberController {
     }
 
     @GetMapping("/members/search")
-    List<MemberTeamDto> search(){
+    List<MemberTeamDto> search() {
         MemberSearchCondition memberSearchCondition = new MemberSearchCondition();
         memberSearchCondition.setUsername("member");
         memberSearchCondition.setAgeGoe(3);
@@ -100,7 +94,7 @@ public class MemberController {
     }
 
     @GetMapping("/members/search/page")
-    Page<MemberTeamDto> searchPageComplex(Pageable pageable){
+    Page<MemberTeamDto> searchPageComplex(Pageable pageable) {
         MemberSearchCondition condition = new MemberSearchCondition();
         condition.setUsername("member");
         condition.setAgeGoe(3);
