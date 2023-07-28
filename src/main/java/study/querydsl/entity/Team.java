@@ -1,5 +1,6 @@
 package study.querydsl.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.ArrayList;
@@ -17,7 +18,8 @@ public class Team {
 
     private String name;
 
-    @OneToMany(mappedBy = "team")
+    @JsonIgnore
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private List<Member> members = new ArrayList<>();
 
     public Team(String name) {

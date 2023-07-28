@@ -13,8 +13,8 @@ public class QMemberDto extends ConstructorExpression<MemberDto> {
 
     private static final long serialVersionUID = 1356709634L;
 
-    public QMemberDto(com.querydsl.core.types.Expression<String> username, com.querydsl.core.types.Expression<Integer> age) {
-        super(MemberDto.class, new Class<?>[]{String.class, int.class}, username, age);
+    public QMemberDto(com.querydsl.core.types.Expression<? extends study.querydsl.entity.Member> member) {
+        super(MemberDto.class, new Class<?>[]{study.querydsl.entity.Member.class}, member);
     }
 
 }

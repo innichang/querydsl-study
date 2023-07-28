@@ -1,22 +1,28 @@
 package study.querydsl.repository;
 
-import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import study.querydsl.dto.MemberDto;
 import study.querydsl.dto.MemberSearchCondition;
 import study.querydsl.dto.MemberTeamDto;
 import study.querydsl.dto.QMemberTeamDto;
 import study.querydsl.entity.Member;
+import study.querydsl.entity.QMember;
+import study.querydsl.entity.Team;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.querydsl.jpa.JPAExpressions.select;
 import static org.springframework.util.StringUtils.hasText;
 import static study.querydsl.entity.QMember.*;
 import static study.querydsl.entity.QTeam.*;
@@ -27,6 +33,218 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
     public MemberRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
+    }
+
+    @Override         //and 사용
+    public List<Member> queryWithAnd() {
+        return queryFactory
+                .selectFrom(member)
+                .where(member.username.contains("member")
+                        .and(member.age.between(14, 19))
+                )
+                .fetch();
+    }
+//    @Override         //and 미사용사용
+//    public List<Member> queryWithAnd() {
+//        return queryFactory
+//                .selectFrom(member)
+//                .where(member.username.contains("member"),
+//                        member.age.between(14, 19)
+//                )
+//                .fetch();
+//    }
+
+    @Override
+    public List<Member> sortMemberList() {
+        return queryFactory
+                .selectFrom(member)
+                .where(member.age.between(17, 25))
+                .orderBy(
+                        member.username.desc().nullsLast(),
+                        member.age.desc()
+                )
+                .fetch();
+    }
+
+    @Override
+    public List<Member> pagingMemberList() {
+        return queryFactory
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(3)
+                .limit(5)
+                .fetch();
+    }
+
+    @Override
+    public Tuple aggregationList() {
+        return queryFactory
+                .select(
+                        member.count(),
+                        member.age.sum(),
+                        member.age.avg(),
+                        member.age.max(),
+                        member.age.min()
+                )
+                .from(member)
+                .fetchOne();
+    }
+
+    @Override
+    public List<Member> basicJoin() {
+        return queryFactory
+                .selectFrom(member)
+                .join(member.team, team)
+                .where(team.name.eq("teamA"))
+                .fetch();
+    }
+
+    @Override
+    public List<MemberTeamDto> joinOn() {
+        List<Tuple> results = queryFactory
+                .select(member, team)
+                .from(member)
+//                .join(member.team, team)
+                .leftJoin(member.team)
+//                .where(team.name.eq("teamA"))
+                .on(team.name.eq("teamA"))
+                .fetch();
+
+        List<MemberTeamDto> memberTeamDto = new ArrayList<>();
+
+        for (Tuple result : results) {
+            Member member = result.get(0, Member.class);
+
+            MemberTeamDto dto = new MemberTeamDto(
+                    member.getId(),
+                    member.getUsername(),
+                    member.getAge(),
+                    member.getTeam().getId(),
+                    member.getTeam().getName()
+            );
+
+            memberTeamDto.add(dto);
+        }
+
+        return memberTeamDto;
+    }
+
+    @Override
+    public List<MemberTeamDto> unrelatedJoin() {
+        List<Tuple> results = queryFactory
+                .select(member, team)
+                .from(member)
+                .leftJoin(team)
+                .on(member.username.eq(team.name))
+                .fetch();
+
+        List<MemberTeamDto> memberTeamDto = new ArrayList<>();
+
+        for (Tuple result : results) {
+            Member member = result.get(0, Member.class);
+            Team team = result.get(1, Team.class);
+
+            if (team == null) continue;
+
+            MemberTeamDto dto = new MemberTeamDto(
+                    member.getId(),
+                    member.getUsername(),
+                    member.getAge(),
+                    team.getId(),
+                    team.getName()
+            );
+
+            memberTeamDto.add(dto);
+        }
+
+        return memberTeamDto;
+    }
+
+    @Override
+    public Member fetchJoin() {
+        return queryFactory
+                .selectFrom(member)
+                .join(member.team, team)
+                .fetchJoin()
+                .where(member.username.eq("member1"))
+                .fetchOne();
+    }
+
+    @Override
+    public List<Member> whereSubQuery() {
+        QMember memberSub = new QMember("memberSub");
+
+        return queryFactory
+                .selectFrom(member)
+                .where(member.age.in(
+                        select(memberSub.age)
+                                .from(memberSub)
+                                .where(memberSub.age.gt(95))
+                ))
+                .fetch();
+    }
+
+    @Override
+    public List<Tuple> selectSubQuery() {
+        QMember memberSub = new QMember("memberSub");
+
+        return queryFactory
+                .select(member.username,
+                        select(memberSub.age.avg())
+                                .from(memberSub))
+                .from(member)
+                .fetch();
+    }
+
+    @Override
+    public List<MemberDto> caseExample() {
+        return queryFactory
+                .select(Projections.constructor(MemberDto.class,
+                        member.username,
+                        member.age,
+                        new CaseBuilder()
+                                .when(member.age.between(0, 9)).then("Too young to count")
+                                .when(member.age.between(10, 19)).then("Twenties")
+                                .when(member.age.between(20, 29)).then("Thirties")
+                                .when(member.age.between(30, 39)).then("Forties")
+                                .when(member.age.between(40, 49)).then("Fifties")
+                                .otherwise("Too old to count")))
+                .from(member)
+                .fetch();
+    }
+
+    @Override
+    public List<String> addString() {
+        return queryFactory
+                .select(member.username.concat("_")
+                        .concat(member.age.stringValue())
+                        .concat("__")
+                        .concat(member.team.name))
+                .from(member)
+                .where(member.age.between(61, 66))
+                .fetch();
+    }
+
+    @Override
+    public List<MemberTeamDto> queryProjections() {
+        List<MemberTeamDto> results = queryFactory
+                .select(new QMemberTeamDto(
+                        member.id,
+                        member.username,
+                        member.age,
+                        member.team.id,
+                        member.team.name
+                ))
+                .from(member)
+                .join(member.team, team)
+                .where(member.team.name.eq("teamB"))
+                .fetch();
+
+        for (MemberTeamDto result : results) {
+            System.out.println("member = " + result);
+        }
+
+        return results;
     }
 
     @Override
@@ -50,34 +268,12 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public Page<MemberTeamDto> searchPageSimple(MemberSearchCondition condition, Pageable pageable) {
-        QueryResults<MemberTeamDto> results = queryFactory
-                .select(new QMemberTeamDto(
-                        member.id.as("memberId"),
-                        member.username,
-                        member.age,
-                        team.id.as("teamId"),
-                        team.name.as("teamName")))
-                .from(member)
-                .leftJoin(member.team, team)
-                .where(
-                        usernameEq(condition.getUsername()),
-                        teamNameEq(condition.getTeamName()),
-                        ageGoe(condition.getAgeGoe()),
-                        ageLoe(condition.getAgeLoe())
-                )
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetchResults();       //카운트는 따로 가져와야함
-
-        List<MemberTeamDto> content = results.getResults();
-        long total = results.getTotal();
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    @Override
     public Page<MemberTeamDto> searchPageComplex(MemberSearchCondition condition, Pageable pageable) {
+        String username = condition.getUsername();
+        String teamName = condition.getTeamName();
+        Integer ageGoe = condition.getAgeGoe();
+        Integer ageLoe = condition.getAgeLoe();
+
         List<MemberTeamDto> content = queryFactory
                 .select(new QMemberTeamDto(
                         member.id.as("memberId"),
@@ -96,28 +292,22 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        //카운트 데이터가 이미 다른데 저장되어있다거나,
-        //조인을 줄여서 덜 복잡하게 카운트를 가져올 수 있을때
-        //카운트 쿼리 최적화
-        //카운트 쿼리 먼저하고 데이터 없으면 컨텐츠 쿼리 안하거나.
+
         JPAQuery<Long> countQuery = queryFactory
                 .select(Wildcard.count)
                 .from(member)
                 .leftJoin(member.team, team)
                 .where(
-                        usernameEq(condition.getUsername()),
-                        teamNameEq(condition.getTeamName()),
-                        ageGoe(condition.getAgeGoe()),
-                        ageLoe(condition.getAgeLoe())
-                );              //fetchCount() 걸지 않고
+                        memberSearchCondition(username, teamName, ageGoe, ageLoe)
+                );
 
         return PageableExecutionUtils.getPage(content, pageable, () -> {
             return countQuery.fetch().get(0);
         });
-                                            //content와 pageable를 보고 필요없으면 countQuery.fetchCount()를 하지 않음
+        //content와 pageable를 보고, 필요없으면 countQuery.fetchCount()를 하지 않음
     }
 
-    private BooleanExpression memberFilter(String username, String teamName, Integer ageGoe, Integer ageLoe) {
+    private BooleanExpression memberSearchCondition(String username, String teamName, Integer ageGoe, Integer ageLoe) {
         return usernameEq(username)
                 .and(teamNameEq(teamName))
                 .and(ageGoe(ageGoe))
@@ -125,11 +315,11 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     }
 
     private BooleanExpression usernameEq(String username) {
-        return hasText(username) ? member.username.eq(username) : null;
+        return hasText(username) ? member.username.contains(username) : null;
     }
 
     private BooleanExpression teamNameEq(String teamName) {
-        return hasText(teamName) ? team.name.eq(teamName) : null;
+        return hasText(teamName) ? team.name.contains(teamName) : null;
     }
 
     private BooleanExpression ageGoe(Integer ageGoe) {
@@ -139,5 +329,8 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     private BooleanExpression ageLoe(Integer ageLoe) {
         return ageLoe != null ? member.age.loe(ageLoe) : null;
     }
-
 }
+
+
+
+

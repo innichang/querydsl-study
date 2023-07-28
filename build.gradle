@@ -31,18 +31,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.data:spring-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
 	implementation  'com.googlecode.json-simple:json-simple:1.1.1'
-
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6'
-	testImplementation 'org.springframework.security:spring-security-test'
-
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
 
 	// Querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -50,8 +40,17 @@ dependencies {
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-	// DB
-	runtimeOnly 'com.h2database:h2'
+	//test db
+	//runtimeOnly 'com.h2database:h2'
+
+	//for database
+	implementation  "mysql:mysql-connector-java:8.0.28"
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
 }
 def generated = 'src/main/generated'
 
