@@ -30,15 +30,11 @@ class MemberRepositoryTest {
 
     @Autowired
     EntityManagerFactory emf;
-
     @Autowired
     EntityManager em;
-
     JPAQueryFactory queryFactory;
-
     @Autowired
     MemberRepository memberRepository;
-
 
     @Test
     public void join() {     //N+1 조금 더 정확히 알아보기
@@ -53,6 +49,7 @@ class MemberRepositoryTest {
         System.out.println("member + team = " + findMember.getUsername() + " " + findMember.getTeam());
         //findMember.getTeam() 호출시 +1 쿼리 발생  (2차 쿼리)
     }
+
 
     @Test
     public void fetchJoinDemonstration() {
