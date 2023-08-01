@@ -31,20 +31,80 @@ class MemberRepositoryTest {
     @Autowired
     MemberRepository memberRepository;
 
-    @Test
+
+    @BeforeEach
+    public void before() {
+        queryFactory = new JPAQueryFactory(em);
+
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        em.persist(teamA);
+        em.persist(teamB);
+
+
+        for(int i =0 ; i < 10; i++){
+            if(i%2 == 0) {
+                em.persist(new Member("member" + i, i, teamA));
+            } else {
+                em.persist(new Member("member"+ i, i, teamB));
+            }
+        }
+
+//        Member member1 = new Member("member1", 10, teamA);
+//        Member member2 = new Member("member2", 20, teamA);
+//
+//        Member member3 = new Member("member3", 30, teamB);
+//        Member member4 = new Member("member4", 40, teamB);
+//        em.persist(member1);
+//        em.persist(member2);
+//        em.persist(member3);
+//        em.persist(member4);
+    }
+
+    @Test     //14세와 21세 사이
     public void join_and_test() {
         List<Member> findMembers = memberRepository.queryWithAnd();
 
-        assertThat(findMembers).hasSize(6);
+        assertThat(findMembers).hasSize(1);
+        assertThat(findMembers)
+                .extracting("username")
+                .containsExactly("member2");
     }
 
     @Test
     public void aggregation_test() {
         AggregationDto result = memberRepository.aggregationList();
 
-        assertThat(result.getAvg()).isEqualTo(49.5);
-        assertThat(result.getSum()).isEqualTo(4950);
+        assertThat(result.getAvg()).isEqualTo(4.5);
+        assertThat(result.getSum()).isEqualTo(45);
     }
+
+    @Test
+    public void pagingTest() {
+        List<Member> results = memberRepository.pagingMemberList();
+
+        assertThat(results).hasSize(2);
+        assertThat(results)
+                .extracting("username")
+                .containsExactly("member9", "member8");
+    }
+
+    @Test
+    public void basicJoin_test() {
+        List<Member> members = memberRepository.basicJoin();
+
+        assertThat(members).hasSize(50);
+        assertThat(members)
+                .extracting("age")
+                .doesNotContain(3,5,7,9);
+    }
+
+//    @Test
+//    public void joinOn_test(){
+//        List<MemberTeamDto> members = memberRepository.joinOn();
+//
+//        assertThat(members).hasSize(5);
+//    }
 
     @Test   //Test XXXXXX
     public void join() {     //N+1 조금 더 정확히 알아보는 용도
@@ -71,4 +131,15 @@ class MemberRepositoryTest {
 
         assertThat(findMember.getAge()).isEqualTo(1);
     }
+//
+//    @Test
+//    public void fetchJoinDemonstration() {
+//        queryFactory = new JPAQueryFactory(em);
+//
+//        Member findMember = memberRepository.fetchJoin();
+//
+//        System.out.println("findMember " + findMember);
+//
+//        assertThat(findMember.getAge()).isEqualTo(1);
+//    }
 }

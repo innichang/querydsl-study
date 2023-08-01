@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import study.querydsl.dto.*;
+import study.querydsl.entity.MemberProject;
+import study.querydsl.repository.MemberRepositoryImpl;
 import study.querydsl.service.MemberService;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberRepositoryImpl memberRepository;
 
     @GetMapping("/members/search/and")
     public List<MemberDto> andMember() {
@@ -102,5 +105,10 @@ public class MemberController {
         condition.setTeamName("teamB");
 
         return memberService.searchPageComplex(condition, pageable);
+    }
+
+    @GetMapping("/members/mtom")
+    List<MemberProject> mTom(){
+        return memberRepository.mToMQueryDsl();
     }
 }
