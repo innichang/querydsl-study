@@ -30,15 +30,11 @@ class MemberRepositoryTest {
 
     @Autowired
     EntityManagerFactory emf;
-
     @Autowired
     EntityManager em;
-
     JPAQueryFactory queryFactory;
-
     @Autowired
     MemberRepository memberRepository;
-
 
     @Test
     public void join() {     //N+1 조금 더 정확히 알아보기
