@@ -22,6 +22,6 @@ public class Project {
     private String projectName;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<MemberProject> projects = new ArrayList<>();
 }

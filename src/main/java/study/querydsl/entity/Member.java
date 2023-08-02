@@ -26,7 +26,7 @@ public class Member {
     private Team team;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberProject> members = new ArrayList<>();
 
     public Member(String username) {

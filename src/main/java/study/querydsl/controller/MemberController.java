@@ -2,6 +2,7 @@ package study.querydsl.controller;
 
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +15,11 @@ import study.querydsl.service.MemberService;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberRepositoryImpl memberRepository;
 
     @GetMapping("/members/search/and")
     public List<MemberDto> andMember() {
@@ -105,10 +106,5 @@ public class MemberController {
         condition.setTeamName("teamB");
 
         return memberService.searchPageComplex(condition, pageable);
-    }
-
-    @GetMapping("/members/mtom")
-    List<MemberProject> mTom(){
-        return memberRepository.mToMQueryDsl();
     }
 }
