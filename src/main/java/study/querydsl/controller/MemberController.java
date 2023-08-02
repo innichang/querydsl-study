@@ -2,16 +2,20 @@ package study.querydsl.controller;
 
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import study.querydsl.dto.*;
+import study.querydsl.entity.MemberProject;
+import study.querydsl.repository.MemberRepositoryImpl;
 import study.querydsl.service.MemberService;
 
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 public class MemberController {
 
