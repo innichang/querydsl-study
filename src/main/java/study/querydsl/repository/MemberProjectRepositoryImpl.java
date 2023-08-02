@@ -29,6 +29,7 @@ public class MemberProjectRepositoryImpl implements MemberProjectRepositoryCusto
         this.queryFactory = new JPAQueryFactory(em);
     }
     public Page<ProjectMemberDto> pagingMtoM(Pageable pageable){
+
         List<ProjectMemberDto> content = queryFactory
                 .select(new QProjectMemberDto(
                         memberProject.id,
@@ -36,13 +37,9 @@ public class MemberProjectRepositoryImpl implements MemberProjectRepositoryCusto
                         memberProject.member.username,
                         memberProject.member.age))
                 .from(memberProject)
-                .leftJoin(memberProject.member, member)
-                    .where(memberProject.member.id.eq(member.id))
-                .leftJoin(memberProject.project, project)
-                    .where(memberProject.project.id.eq(project.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(member.age.between(20,60)) //condition 추가 가능
+//                .where(memberProject.member.age.goe(ageGoe))
                 .fetch();
 
         JPAQuery<Long> countQuery = queryFactory

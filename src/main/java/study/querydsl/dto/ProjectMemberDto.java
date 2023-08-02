@@ -1,10 +1,8 @@
 package study.querydsl.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import study.querydsl.entity.MemberProject;
 
 @Data
 @NoArgsConstructor
