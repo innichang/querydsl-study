@@ -1,6 +1,5 @@
 package study.querydsl.service;
 
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -83,7 +82,7 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.selectSubQuery();
     }
 
-    public List<MemberDto> caseExmaple() {
+    public List<MemberAgeCategoryDto> caseExmaple() {
         return memberRepository.caseExample();
     }
 

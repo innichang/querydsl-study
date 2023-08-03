@@ -1,6 +1,5 @@
 package study.querydsl.repository;
 
-import com.querydsl.core.Tuple;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,7 +30,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     List<MemberAvgDto> selectSubQuery();
 
-    List<MemberDto> caseExample();
+    List<MemberAgeCategoryDto> caseExample();
 
     List<String> addString();
 

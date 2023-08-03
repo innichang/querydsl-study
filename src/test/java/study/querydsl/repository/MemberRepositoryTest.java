@@ -3,12 +3,14 @@ package study.querydsl.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.dto.AggregationDto;
 import study.querydsl.entity.Member;
+import study.querydsl.entity.Team;
 
 import java.util.List;
 
@@ -49,16 +51,6 @@ class MemberRepositoryTest {
                 em.persist(new Member("member"+ i, i, teamB));
             }
         }
-
-//        Member member1 = new Member("member1", 10, teamA);
-//        Member member2 = new Member("member2", 20, teamA);
-//
-//        Member member3 = new Member("member3", 30, teamB);
-//        Member member4 = new Member("member4", 40, teamB);
-//        em.persist(member1);
-//        em.persist(member2);
-//        em.persist(member3);
-//        em.persist(member4);
     }
 
     @Test     //14세와 21세 사이

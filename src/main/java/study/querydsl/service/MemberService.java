@@ -1,6 +1,5 @@
 package study.querydsl.service;
 
-import com.querydsl.core.Tuple;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import study.querydsl.dto.*;
@@ -28,7 +27,7 @@ public interface MemberService {
 
     List<MemberAvgDto> selectSubQuery();
 
-    List<MemberDto> caseExmaple();
+    List<MemberAgeCategoryDto> caseExmaple();
 
     List<String> addString();
 

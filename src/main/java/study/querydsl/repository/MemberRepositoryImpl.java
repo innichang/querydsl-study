@@ -37,7 +37,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .selectFrom(member)
                 .where(
                         member.username.contains("member")
-                        .and(member.age.between(14, 21))
+                                .and(member.age.between(14, 21))
                 )
                 .fetch();
     }
@@ -48,7 +48,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 //                .selectFrom(member)
 //                .where(
 //                        member.username.contains("member"),
-//                        member.age.between(14, 19)
+//                        member.age.between(14, 21)
 //                )
 //                .fetch();
 //    }
@@ -59,8 +59,9 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .selectFrom(member)
                 .where(member.age.between(17, 25))
                 .orderBy(
-                        member.username.desc().nullsFirst(),
-                        member.age.desc()
+//                        member.age.asc()
+                        member.username.asc().nullsLast(),
+                        member.age.asc()
                 )
                 .fetch();
     }
@@ -80,11 +81,11 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     public AggregationDto aggregationList() {
         return queryFactory
                 .select(new QAggregationDto(
-                        member.count(),
-                        member.age.sum(),
-                        member.age.avg(),
-                        member.age.max(),
-                        member.age.min()
+                                member.count(),
+                                member.age.sum(),
+                                member.age.avg(),
+                                member.age.max(),
+                                member.age.min()
                         )
                 )
                 .from(member)
@@ -107,11 +108,11 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .from(member)
 //                .join(member.team, team)
                 .leftJoin(member.team, team)
-                .where(team.name.eq("teamA"))
-//                .on(team.name.eq("teamA"))
+//                .where(team.name.eq("teamA"))
+                .on(team.name.eq("teamA"))
                 .fetch();
 
-        for(Tuple result : results) {
+        for (Tuple result : results) {
             System.out.println("result is " + result);
         }
 
@@ -195,7 +196,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
         return queryFactory
                 .select(Projections.constructor(MemberAvgDto.class,
-                                member.username,
+                        member.username,
                         select(memberSub.age.avg())
                                 .from(memberSub)
                 ))
@@ -204,20 +205,20 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public List<MemberDto> caseExample() {
+    public List<MemberAgeCategoryDto> caseExample() {
         return queryFactory
-                .select(Projections.constructor(MemberDto.class,
-                        member.username,
-                        member.age,
-                        new CaseBuilder()
-                                .when(member.age.between(0, 9)).then("Too young to count")
-                                .when(member.age.between(10, 19)).then("Twenties")
-                                .when(member.age.between(20, 29)).then("Thirties")
-                                .when(member.age.between(30, 39)).then("Forties")
-                                .when(member.age.between(40, 49)).then("Fifties")
-                                .otherwise("Too old to count")))
-                .from(member)
-                .fetch();
+                .select(Projections.constructor(MemberAgeCategoryDto.class,
+                                member.username,
+                                member.age,
+                                new CaseBuilder()
+                                        .when(member.age.between(0, 9)).then("Too young to count")
+                                        .when(member.age.between(10, 19)).then("Twenties")
+                                        .when(member.age.between(20, 29)).then("Thirties")
+                                        .when(member.age.between(30, 39)).then("Forties")
+                                        .when(member.age.between(40, 49)).then("Fifties")
+                                        .otherwise("Too old to count")))
+                        .from(member)
+                        .fetch();
     }
 
     @Override
@@ -268,8 +269,6 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 )
                 .fetch();
     }
-
-
 
 
     @Override
@@ -334,11 +333,6 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         return ageLoe != null ? member.age.loe(ageLoe) : null;
     }
 
-    public List<MemberProject> mToMQueryDsl(){
-        return queryFactory
-                .selectFrom(memberProject)
-                .fetch();
-    }
 }
 
 
