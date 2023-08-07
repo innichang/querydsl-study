@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.dto.AggregationDto;
+import study.querydsl.dto.MemberTeamDto;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.Team;
 
@@ -21,10 +22,6 @@ import static study.querydsl.entity.QTeam.team;
 @SpringBootTest
 @Transactional
 class MemberRepositoryTest {
-
-    @Autowired
-    EntityManagerFactory emf;
-
     @Autowired
     EntityManager em;
 
@@ -91,12 +88,12 @@ class MemberRepositoryTest {
                 .doesNotContain(3,5,7,9);
     }
 
-//    @Test
-//    public void joinOn_test(){
-//        List<MemberTeamDto> members = memberRepository.joinOn();
-//
-//        assertThat(members).hasSize(5);
-//    }
+    @Test
+    public void joinOn_test(){
+        List<MemberTeamDto> members = memberRepository.joinOn();
+
+        assertThat(members).hasSize(5);
+    }
 
     @Test   //Test XXXXXX
     public void join() {     //N+1 조금 더 정확히 알아보는 용도
@@ -113,16 +110,6 @@ class MemberRepositoryTest {
     }
 
 
-    @Test
-    public void fetchJoinDemonstration() {
-        queryFactory = new JPAQueryFactory(em);
-
-        Member findMember = memberRepository.fetchJoin();
-
-        System.out.println("findMember " + findMember);
-
-        assertThat(findMember.getAge()).isEqualTo(1);
-    }
 //
 //    @Test
 //    public void fetchJoinDemonstration() {
