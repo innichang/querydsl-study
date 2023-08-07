@@ -26,6 +26,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final ListPath<MemberProject, QMemberProject> members = this.<MemberProject, QMemberProject>createList("members", MemberProject.class, QMemberProject.class, PathInits.DIRECT2);
+
     public final QTeam team;
 
     public final StringPath username = createString("username");

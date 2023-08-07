@@ -12,17 +12,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import study.querydsl.dto.*;
-import study.querydsl.entity.Member;
-import study.querydsl.entity.QMember;
-import study.querydsl.entity.Team;
+import study.querydsl.entity.*;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.querydsl.jpa.JPAExpressions.select;
 import static org.springframework.util.StringUtils.hasText;
 import static study.querydsl.entity.QMember.*;
+import static study.querydsl.entity.QMemberProject.memberProject;
 import static study.querydsl.entity.QTeam.*;
 
 public class MemberRepositoryImpl implements MemberRepositoryCustom {
@@ -37,17 +35,20 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     public List<Member> queryWithAnd() {
         return queryFactory
                 .selectFrom(member)
-                .where(member.username.contains("member")
-                        .and(member.age.between(14, 19))
+                .where(
+                        member.username.contains("member")
+                                .and(member.age.between(14, 21))
                 )
                 .fetch();
     }
+
 //    @Override         //and 미사용사용
 //    public List<Member> queryWithAnd() {
 //        return queryFactory
 //                .selectFrom(member)
-//                .where(member.username.contains("member"),
-//                        member.age.between(14, 19)
+//                .where(
+//                        member.username.contains("member"),
+//                        member.age.between(14, 21)
 //                )
 //                .fetch();
 //    }
@@ -58,8 +59,9 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .selectFrom(member)
                 .where(member.age.between(17, 25))
                 .orderBy(
-                        member.username.desc().nullsLast(),
-                        member.age.desc()
+//                        member.age.asc()
+                        member.username.asc().nullsLast(),
+                        member.age.asc()
                 )
                 .fetch();
     }
@@ -68,9 +70,10 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     public List<Member> pagingMemberList() {
         return queryFactory
                 .selectFrom(member)
+                .where(member.username.contains("member"))
                 .orderBy(member.username.desc())
-                .offset(3)
-                .limit(5)
+                .offset(2)
+                .limit(4)
                 .fetch();
     }
 
@@ -78,17 +81,15 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     public AggregationDto aggregationList() {
         return queryFactory
                 .select(new QAggregationDto(
-                        member.count(),
-                        member.age.sum(),
-                        member.age.avg(),
-                        member.age.max(),
-                        member.age.min()
+                                member.count(),
+                                member.age.sum(),
+                                member.age.avg(),
+                                member.age.max(),
+                                member.age.min()
                         )
-
                 )
                 .from(member)
                 .fetchOne();
-
     }
 
     @Override
@@ -106,10 +107,14 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .select(member, team)
                 .from(member)
 //                .join(member.team, team)
-                .leftJoin(member.team)
+                .leftJoin(member.team, team)
 //                .where(team.name.eq("teamA"))
                 .on(team.name.eq("teamA"))
                 .fetch();
+
+        for (Tuple result : results) {
+            System.out.println("result is " + result);
+        }
 
         List<MemberTeamDto> memberTeamDto = new ArrayList<>();
 
@@ -191,7 +196,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
         return queryFactory
                 .select(Projections.constructor(MemberAvgDto.class,
-                                member.username,
+                        member.username,
                         select(memberSub.age.avg())
                                 .from(memberSub)
                 ))
@@ -200,20 +205,20 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public List<MemberDto> caseExample() {
+    public List<MemberAgeCategoryDto> caseExample() {
         return queryFactory
-                .select(Projections.constructor(MemberDto.class,
-                        member.username,
-                        member.age,
-                        new CaseBuilder()
-                                .when(member.age.between(0, 9)).then("Too young to count")
-                                .when(member.age.between(10, 19)).then("Twenties")
-                                .when(member.age.between(20, 29)).then("Thirties")
-                                .when(member.age.between(30, 39)).then("Forties")
-                                .when(member.age.between(40, 49)).then("Fifties")
-                                .otherwise("Too old to count")))
-                .from(member)
-                .fetch();
+                .select(Projections.constructor(MemberAgeCategoryDto.class,
+                                member.username,
+                                member.age,
+                                new CaseBuilder()
+                                        .when(member.age.between(0, 9)).then("Too young to count")
+                                        .when(member.age.between(10, 19)).then("Twenties")
+                                        .when(member.age.between(20, 29)).then("Thirties")
+                                        .when(member.age.between(30, 39)).then("Forties")
+                                        .when(member.age.between(40, 49)).then("Fifties")
+                                        .otherwise("Too old to count")))
+                        .from(member)
+                        .fetch();
     }
 
     @Override
@@ -265,12 +270,9 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .fetch();
     }
 
+
     @Override
     public Page<MemberTeamDto> searchPageComplex(MemberSearchCondition condition, Pageable pageable) {
-        String username = condition.getUsername();
-        String teamName = condition.getTeamName();
-        Integer ageGoe = condition.getAgeGoe();
-        Integer ageLoe = condition.getAgeLoe();
 
         List<MemberTeamDto> content = queryFactory
                 .select(new QMemberTeamDto(
@@ -296,7 +298,10 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .from(member)
                 .leftJoin(member.team, team)
                 .where(
-                        memberSearchCondition(username, teamName, ageGoe, ageLoe)
+                        usernameEq(condition.getUsername()),
+                        teamNameEq(condition.getTeamName()),
+                        ageGoe(condition.getAgeGoe()),
+                        ageLoe(condition.getAgeLoe())
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, () -> {
@@ -327,6 +332,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     private BooleanExpression ageLoe(Integer ageLoe) {
         return ageLoe != null ? member.age.loe(ageLoe) : null;
     }
+
 }
 
 
