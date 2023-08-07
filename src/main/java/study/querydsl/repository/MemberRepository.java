@@ -7,9 +7,11 @@ import study.querydsl.dto.*;
 import study.querydsl.entity.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
+    Optional<Member> findByUsername(String username);
     List<Member> queryWithAnd();
 
     List<Member> sortMemberList();

@@ -109,16 +109,4 @@ class MemberRepositoryTest {
         //findMember.getTeam() 호출시 +1 쿼리 발생  (2차 쿼리)
     }
 
-
-//
-//    @Test
-//    public void fetchJoinDemonstration() {
-//        queryFactory = new JPAQueryFactory(em);
-//
-//        Member findMember = memberRepository.fetchJoin();
-//
-//        System.out.println("findMember " + findMember);
-//
-//        assertThat(findMember.getAge()).isEqualTo(1);
-//    }
 }
