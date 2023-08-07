@@ -1,6 +1,5 @@
 package study.querydsl.repository;
 
-import com.querydsl.core.Tuple;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import study.querydsl.dto.*;
@@ -31,7 +30,7 @@ MemberRepositoryCustom {
 
     List<MemberAvgDto> selectSubQuery();
 
-    List<MemberDto> caseExample();
+    List<MemberAgeCategoryDto> caseExample();
 
     List<String> addString();
 

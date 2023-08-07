@@ -1,6 +1,5 @@
 package study.querydsl.repository;
 
-import com.querydsl.core.Tuple;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,9 +7,11 @@ import study.querydsl.dto.*;
 import study.querydsl.entity.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
+    Optional<Member> findByUsername(String username);
     List<Member> queryWithAnd();
 
     List<Member> sortMemberList();
@@ -31,7 +32,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     List<MemberAvgDto> selectSubQuery();
 
-    List<MemberDto> caseExample();
+    List<MemberAgeCategoryDto> caseExample();
 
     List<String> addString();
 
@@ -47,5 +48,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 //    @Modifying
 //    @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
 //    int bulkAgePlus(@Param("age") int age);
+
 
 }

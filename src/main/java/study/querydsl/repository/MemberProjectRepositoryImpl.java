@@ -28,6 +28,7 @@ public class MemberProjectRepositoryImpl implements MemberProjectRepositoryCusto
     public MemberProjectRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
+
     public Page<ProjectMemberDto> pagingMtoM(Pageable pageable){
 
         List<ProjectMemberDto> content = queryFactory
@@ -50,5 +51,4 @@ public class MemberProjectRepositoryImpl implements MemberProjectRepositoryCusto
             return countQuery.fetch().get(0);
         });
     }
-
 }

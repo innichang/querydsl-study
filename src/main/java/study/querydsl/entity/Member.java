@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @ToString(of ={"id", "username", "age"})      //팀는 들어가면 안됨. 연관관계 손대지말것. 왔다갔다 무한루프 걸림
 public class Member {
     @Id @GeneratedValue
