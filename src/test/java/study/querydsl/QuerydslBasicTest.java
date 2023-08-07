@@ -81,6 +81,7 @@ public class QuerydslBasicTest {
 
         System.out.println(findMember);
     }
+
     @Test
     public void startJPQL() {
         //finding member1 using JPQL
