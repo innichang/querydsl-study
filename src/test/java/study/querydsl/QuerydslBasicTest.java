@@ -134,16 +134,6 @@ public class QuerydslBasicTest {
         assertThat(findMember.getUsername()).isEqualTo("member1");
     }
 
-//    @Test
-//    public void resultFetch() {
-//        QueryResults<Member> results = queryFactory
-//                .selectFrom(member)
-//                .fetchResults();
-//
-//        results.getTotal();
-//        List<Member> content = results.getResults();
-//    }
-
     //정렬
     @Test
     public void sort() {
@@ -257,45 +247,6 @@ public class QuerydslBasicTest {
                 .containsExactly("teamA", "teamB");
     }
 
-    //회원과 팀을 조인하면서, 팀 이름이 teamA인 팀만 조인, 회원은 모두 조회
-    //jpql: select m, t from Member m left join m.team t on t.name = 'teamA'
-//    @Test
-//    public void join_on_filtering() {
-//        List<Tuple> result = queryFactory
-//                .select(member, team)
-//                .from(member)
-//                .join(member.team, team)
-////                .leftJoin(member.team, team)
-////                .where(team.name.eq("teamA"))
-//                .on(team.name.eq("teamA"))
-//                .fetch();
-//
-//        for (Tuple tuple : result) {
-//            System.out.println("tuple= " + tuple);
-//        }
-//    }
-
-//    @Test
-//    public void join_on_no_relation() {
-//        em.persist(new Member("teamA"));
-//        em.persist(new Member("teamB"));
-//        em.persist(new Member("teamC"));
-//
-//        List<Tuple> result = queryFactory
-//                .select(member, team)
-//                .from(member)
-//                .leftJoin(team)
-//                .on(member.username.eq(team.name))  //조인하는 대상을 줄이는 on절
-//                .fetch();
-//
-//        //from절에 여러 엔티티를 선택해서 세타 조인
-//        //team의 모든 정보, member의 모든 정보를 가져와서 조인을 해버림
-//
-//        for (Tuple tuple : result) {
-//            System.out.println("tuple= " + tuple);
-//        }
-//    }
-
     @Test
     public void fetchJoinNo() {
         em.flush();
@@ -381,169 +332,6 @@ public class QuerydslBasicTest {
                 .containsExactly(20, 30, 40);
     }
 
-//    @Test
-//    public void selectSubQuery() {
-//
-//        QMember memberSub = new QMember("memberSub");
-//
-//        List<Tuple> result = queryFactory
-//                .select(member.username,
-//                        select(memberSub.age.avg())
-//                                .from(memberSub))
-//                .from(member)
-//                .fetch();
-//
-//        for (Tuple tuple : result) {
-//            System.out.println("tuple = " + tuple);
-//        }
-//    }
-
-//    @Test
-//    public void basicCase() {
-//        List<String> result = queryFactory
-//                .select(member.age
-//                        .when(10).then("열살")
-//                        .when(20).then("스무살")
-//                        .otherwise("기타"))
-//                .from(member)
-//                .fetch();
-//
-//        System.out.println(result);
-//        for (String s : result) {
-//            System.out.println("s = " + s);
-//        }
-//    }
-
-//    @Test
-//    public void complexCase() {
-//        List<String> result = queryFactory
-//                .select(new CaseBuilder()
-//                        .when(member.age.between(0, 20)).then("0 ~ 20")
-//                        .when(member.age.between(21, 30)).then("21 ~ 30")
-//                        .otherwise("misc."))
-//                .from(member)
-//                .fetch();
-//
-//        System.out.println(result);
-//        for (String s : result) {
-//            System.out.println("s = " + s);
-//        }
-//    }
-
-//    @Test
-//    public void constant() {
-//        List<Tuple> result = queryFactory
-//                .select(member.username, Expressions.constant("A"))
-//                .from(member)
-//                .fetch();
-//
-//        System.out.println(result);
-//        for (Tuple tuple : result) {
-//            System.out.println("tuple = " + tuple);
-//        }
-//    }
-
-//    @Test
-//    public void concat() {
-//        //{username}_{age}
-//        List<String> result = queryFactory
-//                .select(member.username.concat("_").concat(member.age.stringValue()))
-//                .from(member)
-//                .where(member.username.eq("member1"))
-//                .fetch();
-//
-//        System.out.println(result);
-//        for (String s : result) {
-//            System.out.println("String = " + s);
-//        }
-//    }
-
-//    @Test
-//    public void tupleProjection() {
-//        List<Tuple> result = queryFactory
-//                .select(member.username, member.age)
-//                .from(member)
-//                .fetch();
-//
-//        for (Tuple tuple : result) {
-//            String username = tuple.get(member.username);
-//            Integer age = tuple.get(member.age);
-//            System.out.println("username = " + username);
-//            System.out.println("age = " + age);
-//        }
-//    }
-
-//    @Test
-//    public void findDtoByJPQL() {
-//        List<MemberDto> result = em.createQuery(
-//                        "select new study.querydsl.dto.MemberDto(m.username, m.age) " +
-//                                "from Member m", MemberDto.class)
-//                .getResultList();
-//
-//        System.out.println(result);
-//        for (MemberDto memberDto : result) {
-//            System.out.println("memberDto =" + memberDto);
-//        }
-//    }
-
-//    @Test
-//    public void findDtoBySetter() {
-//        List<MemberDto> result = queryFactory
-//                .select(Projections.bean(MemberDto.class,
-//                        member.username,
-//                        member.age))
-//                .from(member)
-//                .fetch();
-//
-//        System.out.println(result);
-//        for (MemberDto memberDto : result) {
-//            System.out.println("memberDto =" + memberDto);
-//        }
-//    }
-
-//    @Test
-//    public void findDtoByField() {
-//        List<MemberDto> result = queryFactory
-//                .select(Projections.fields(MemberDto.class,
-//                        member.username,
-//                        member.age))
-//                .from(member)
-//                .fetch();
-//
-//        System.out.println(result);
-//        for (MemberDto memberDto : result) {
-//            System.out.println("memberDto =" + memberDto);
-//        }
-//    }
-
-//    @Test
-//    public void findDtoByConstructor() {
-//        List<MemberDto> result = queryFactory
-//                .select(Projections.constructor(MemberDto.class,
-//                        member.username,
-//                        member.age))
-//                .from(member)
-//                .fetch();
-//
-//        System.out.println(result);
-//        for (MemberDto memberDto : result) {
-//            System.out.println("memberDto =" + memberDto);
-//        }
-//
-//    }
-
-//    @Test
-//    public void findDtoByQueryProjection() {
-//        List<MemberDto> result = queryFactory
-//                .select(new QMemberDto(member.username, member.age))
-//                .from(member)
-//                .fetch();
-//
-//        System.out.println(result);
-//        for (MemberDto memberDto : result) {
-//            System.out.println("memberDto =" + memberDto);
-//        }
-//    }
 
     @Test
     public void dynamicQuery_BooleanBuilder() {
@@ -570,81 +358,31 @@ public class QuerydslBasicTest {
                 .fetch();
     }
 
-//    @Test
-//    public void dynamicQuery_WhereParam() {
-//        String usernameParam = "member1";
-//        Integer ageParam = 10;
-//
-//        List<Member> result = searchMember2(usernameParam, ageParam);
-//        assertThat(result.size()).isEqualTo(1);
-//    }
-//
-//    private List<Member> searchMember2(String usernameCond, Integer ageCond) {
-//        return queryFactory
-//                .selectFrom(member)
-//                .where(allEq(usernameCond, ageCond))
-//                .fetch();
-//    }
-//
-//
-//    private BooleanExpression allEq(String usernameCond, Integer ageCond) {
-//        return usernameEq(usernameCond).and(ageEq(ageCond));
-//    }
-//
-//    private BooleanExpression usernameEq(String usernameCond) {
-//        return usernameCond != null ? member.username.eq(usernameCond) : null;  //where에 null이 들어가면 그냥 무시함
-//    }
-//
-//    private BooleanExpression ageEq(Integer ageCond) {
-//        return ageCond != null ? member.age.eq(ageCond) : null;
-//    }
-//
-//    @Test
-//    @Commit
-//    public void bulkUpdate() {
-//        long count = queryFactory
-//                .update(member)
-//                .set(member.username, "비회원")
-//                .where(member.age.lt(28))
-//                .execute();
-//
-//        System.out.println("CcCCCCCC  " + count);
-//        em.flush();
-//        em.clear();
-//
-//        List<Member> result = queryFactory
-//                .selectFrom(member)
-//                .fetch();
-//
-//        System.out.println(result);
-//    }
-//
-//    @Test
-//    public void bulkAdd() {
-//        long count = queryFactory
-//                .update(member)
-//                .set(member.age, member.age.add(1))  //multiple.....
-//                .execute();
-//    }
-//
-//    @Test
-//    public void bulkDelete() {
-//        long count = queryFactory
-//                .delete(member)
-//                .where(member.age.gt(18))
-//                .execute();
-//    }
-//
-//    @Test
-//    public void sqlFunction() {
-//        List<String> result = queryFactory
-//                .select(member.username)
-//                .from(member)
-//                .where(member.username.eq(member.username.lower()))
-//                .fetch();
-//
-//        for (String s : result) {
-//            System.out.println("s = " + s);
-//        }
-//    }
-}
+    @Test
+    public void dynamicQuery_WhereParam() {
+        String usernameParam = "member1";
+        Integer ageParam = 10;
+
+        List<Member> result = searchMember2(usernameParam, ageParam);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember2(String usernameCond, Integer ageCond) {
+        return queryFactory
+                .selectFrom(member)
+                .where(allEq(usernameCond, ageCond))
+                .fetch();
+    }
+
+
+    private BooleanExpression allEq(String usernameCond, Integer ageCond) {
+        return usernameEq(usernameCond).and(ageEq(ageCond));
+    }
+
+    private BooleanExpression usernameEq(String usernameCond) {
+        return usernameCond != null ? member.username.eq(usernameCond) : null;  //where에 null이 들어가면 그냥 무시함
+    }
+
+    private BooleanExpression ageEq(Integer ageCond) {
+        return ageCond != null ? member.age.eq(ageCond) : null;
+    }
